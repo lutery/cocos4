@@ -1094,6 +1094,17 @@ if (EDITOR || TEST || NODEJS) {
         ARRAY_ITEM_VALUES: typeof ARRAY_ITEM_VALUES,
         PACKED_SECTIONS: typeof PACKED_SECTIONS,
     };
+
+    // Wire the Internal namespace onto the deserialize function at runtime.
+    // TypeScript `declare namespace deserialize.Internal` is type-only and produces no JS,
+    // but cocos-cli's editor-extends serialize code imports it as a value
+    // (DataTypeID_, Refs_, File_). Without this, `deserialize.Internal` is `undefined`
+    // and every cocos-cli build/preview/mcp-server command crashes at engine init.
+    deserialize.Internal = {
+        DataTypeID_: DataTypeID,
+        Refs_: Refs,
+        File_: File,
+    } as unknown as typeof deserialize.Internal;
 }
 
 if (TEST) {
